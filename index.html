@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seering LLC — Smart Home Intelligence</title>
+<meta name="description" content="Seering LLC builds tools that help you understand, monitor, and optimize your smart home network. Maker of Threadlytics for iOS.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0E17;
+    --bg-2: #111827;
+    --bg-card: rgba(17, 24, 39, 0.7);
+    --border: rgba(255,255,255,0.06);
+    --text-1: #F1F5F9;
+    --text-2: #94A3B8;
+    --text-3: #64748B;
+    --accent: #38BDF8;
+    --accent-2: #818CF8;
+    --accent-glow: rgba(56, 189, 248, 0.15);
+    --thread-blue: #2966F2;
+    --matter-orange: #E8552D;
+    --green: #34D399;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text-1);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ─── Ambient background ─── */
+  .bg-glow {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .bg-glow::before {
+    content: '';
+    position: absolute;
+    top: -40%; left: -20%;
+    width: 80vw; height: 80vw;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(56,189,248,0.06) 0%, transparent 65%);
+  }
+  .bg-glow::after {
+    content: '';
+    position: absolute;
+    bottom: -30%; right: -15%;
+    width: 70vw; height: 70vw;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(129,140,248,0.05) 0%, transparent 65%);
+  }
+
+  /* ─── Layout ─── */
+  .container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 28px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ─── Nav ─── */
+  nav {
+    padding: 24px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .wordmark {
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+    color: var(--text-1);
+    text-decoration: none;
+  }
+  .wordmark span {
+    color: var(--accent);
+  }
+  nav a.nav-link {
+    color: var(--text-2);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  nav a.nav-link:hover { color: var(--text-1); }
+
+  /* ─── Hero ─── */
+  .hero {
+    padding: 100px 0 80px;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .hero-eyebrow .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 58px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, var(--text-1) 0%, var(--text-2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    font-size: 18px;
+    color: var(--text-2);
+    max-width: 580px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+  }
+
+  /* ─── Product Section ─── */
+  .product {
+    padding: 60px 0;
+  }
+  .product-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px;
+    backdrop-filter: blur(24px);
+    position: relative;
+    overflow: hidden;
+  }
+  .product-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--accent-2), transparent);
+    opacity: 0.4;
+  }
+  .product-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  .product-icon {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #1D2935, #2C4858, #34688A);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  .product-icon svg { width: 28px; height: 28px; }
+  .product-name {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .product-tagline {
+    font-size: 15px;
+    color: var(--text-2);
+  }
+  .product-desc {
+    font-size: 16px;
+    color: var(--text-2);
+    line-height: 1.8;
+    margin-bottom: 36px;
+    max-width: 720px;
+  }
+
+  .tech-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    color: var(--text-2);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .chip .cd {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+  }
+  .chip .cd.thread { background: var(--thread-blue); }
+  .chip .cd.matter { background: var(--matter-orange); }
+  .chip .cd.apple { background: var(--green); }
+  .chip .cd.mesh { background: var(--accent-2); }
+  .chip .cd.swift { background: #F05138; }
+
+  /* ─── Values ─── */
+  .values {
+    padding: 60px 0;
+  }
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .value-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 28px;
+    backdrop-filter: blur(16px);
+  }
+  .value-card h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+  .value-card p {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.7;
+  }
+  .value-icon {
+    font-size: 24px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  /* ─── About ─── */
+  .about {
+    padding: 60px 0;
+  }
+  .about-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .about h2 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  .about p {
+    font-size: 15px;
+    color: var(--text-2);
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+  .about-detail {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-3);
+    padding: 20px 24px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    line-height: 2;
+  }
+  .about-detail strong {
+    color: var(--text-2);
+  }
+
+  /* ─── Contact ─── */
+  .contact {
+    padding: 60px 0 100px;
+    text-align: center;
+  }
+  .contact h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+  }
+  .contact p {
+    font-size: 15px;
+    color: var(--text-2);
+    margin-bottom: 8px;
+  }
+  .contact a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .contact a:hover {
+    text-decoration: underline;
+  }
+
+  /* ─── Footer ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-3);
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 680px) {
+    .hero { padding: 60px 0 48px; }
+    .product-card { padding: 28px 22px; }
+    .product-header { flex-direction: column; }
+    .about-inner { grid-template-columns: 1fr; gap: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="container">
+
+  <!-- Nav -->
+  <nav>
+    <a href="#" class="wordmark">seering<span>.</span></a>
+    <div style="display:flex;gap:28px;">
+      <a href="#product" class="nav-link">Product</a>
+      <a href="#about" class="nav-link">About</a>
+      <a href="#contact" class="nav-link">Contact</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <span class="dot"></span>
+      Smart Home Intelligence
+    </div>
+    <h1>See your smart home<br>the way it actually works.</h1>
+    <p>Seering LLC builds tools that help you understand the invisible networks connecting your smart home — from Thread mesh topology to Matter device identity and beyond.</p>
+  </section>
+
+  <!-- Product -->
+  <section class="product" id="product">
+    <div class="product-card">
+      <div class="product-header">
+        <div class="product-icon">
+          <svg viewBox="0 0 32 32" fill="none">
+            <g stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="16" cy="16" r="4"/>
+              <circle cx="16" cy="6" r="2.5"/>
+              <circle cx="24.5" cy="11" r="2.5"/>
+              <circle cx="24.5" cy="21" r="2.5"/>
+              <circle cx="16" cy="26" r="2.5"/>
+              <circle cx="7.5" cy="21" r="2.5"/>
+              <circle cx="7.5" cy="11" r="2.5"/>
+              <line x1="16" y1="12" x2="16" y2="8.5"/>
+              <line x1="19.5" y1="13.5" x2="22" y2="12"/>
+              <line x1="19.5" y1="18.5" x2="22" y2="20"/>
+              <line x1="16" y1="20" x2="16" y2="23.5"/>
+              <line x1="12.5" y1="18.5" x2="10" y2="20"/>
+              <line x1="12.5" y1="13.5" x2="10" y2="12"/>
+            </g>
+          </svg>
+        </div>
+        <div>
+          <div class="product-name">Threadlytics</div>
+          <div class="product-tagline">Thread mesh analytics for iOS</div>
+        </div>
+      </div>
+
+      <p class="product-desc">
+        Threadlytics is an iOS app that gives you a living graph of your smart home. It discovers Thread border routers and mesh networks, correlates devices across Apple Home, Home Assistant, SmartThings, and other ecosystems, and shows you exactly how your devices communicate — from the application layer down to the radio link.
+      </p>
+
+      <div class="tech-chips">
+        <div class="chip"><span class="cd thread"></span>Thread 1.3 / 1.4</div>
+        <div class="chip"><span class="cd matter"></span>Matter</div>
+        <div class="chip"><span class="cd apple"></span>Apple Home</div>
+        <div class="chip"><span class="cd mesh"></span>Mesh Topology</div>
+        <div class="chip"><span class="cd swift"></span>Swift · SwiftUI</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="values">
+    <div class="values-grid">
+      <div class="value-card">
+        <span class="value-icon">🔬</span>
+        <h3>Software-first analysis</h3>
+        <p>No extra hardware required. Threadlytics uses mDNS discovery, Matter frameworks, and ecosystem APIs to map your network from day one.</p>
+      </div>
+      <div class="value-card">
+        <span class="value-icon">🔒</span>
+        <h3>Privacy by design</h3>
+        <p>Your network data stays on your device. Threadlytics processes everything locally — no cloud accounts, no telemetry, no data leaving your phone.</p>
+      </div>
+      <div class="value-card">
+        <span class="value-icon">🌐</span>
+        <h3>Multi-ecosystem</h3>
+        <p>See your devices across Apple Home, Home Assistant, SmartThings, Google Home, and Amazon Alexa — all correlated into one unified view.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="about" id="about">
+    <div class="about-inner">
+      <div>
+        <h2>About Seering</h2>
+        <p>Seering LLC is a software company focused on smart home network intelligence. We believe that as homes get smarter, the people living in them deserve tools to understand what's happening beneath the surface.</p>
+        <p>Our first product, Threadlytics, was born from the simple frustration of not being able to see how Thread mesh networks, Matter devices, and smart home ecosystems actually work together — and what to do when they don't.</p>
+      </div>
+      <div class="about-detail">
+        <strong>Company</strong><br>
+        Seering LLC<br><br>
+        <strong>Focus</strong><br>
+        Smart home network analysis<br>
+        IoT device intelligence<br><br>
+        <strong>Platform</strong><br>
+        iOS · iPadOS<br><br>
+        <strong>Location</strong><br>
+        Illinois, United States
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="contact" id="contact">
+    <h2>Get in touch</h2>
+    <p>Questions, feedback, or partnership inquiries:</p>
+    <p><a href="mailto:contact@seering.ai">contact@seering.ai</a></p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2026 Seering LLC. All rights reserved.</p>
+  </footer>
+
+</div>
+
+</body>
+</html>
